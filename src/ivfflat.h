@@ -213,6 +213,7 @@ typedef struct IvfflatBuildState
 	/* Sampling */
 	BlockSamplerData bs;
 	ReservoirStateData rstate;
+	double		samplerows;
 	int			rowstoskip;
 
 	/* Sorting */

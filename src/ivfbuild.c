@@ -81,7 +81,7 @@ AddSample(Datum *values, IvfflatBuildState * buildstate)
 	else
 	{
 		if (buildstate->rowstoskip < 0)
-			buildstate->rowstoskip = reservoir_get_next_S(&buildstate->rstate, samples->length, targsamples);
+			buildstate->rowstoskip = reservoir_get_next_S(&buildstate->rstate, buildstate->samplerows, targsamples);
 
 		if (buildstate->rowstoskip <= 0)
 		{
@@ -97,6 +97,8 @@ AddSample(Datum *values, IvfflatBuildState * buildstate)
 
 		buildstate->rowstoskip -= 1;
 	}
+
+	buildstate->samplerows += 1;
 }
 
 /*
@@ -133,6 +135,7 @@ SampleRows(IvfflatBuildState * buildstate)
 	int			targsamples = buildstate->samples->maxlen;
 	BlockNumber totalblocks = RelationGetNumberOfBlocks(buildstate->heap);
 
+	buildstate->samplerows = 0;
 	buildstate->rowstoskip = -1;
 
 	BlockSampler_Init(&buildstate->bs, totalblocks, targsamples, RandomInt());
