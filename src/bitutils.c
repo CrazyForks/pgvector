@@ -169,7 +169,7 @@ BitJaccardDistanceAvx512Popcount(uint32 bytes, unsigned char *ax, unsigned char 
 #endif
 
 TARGET_XSAVE static bool
-SupportsAvx512Popcount()
+SupportsAvx512Popcount(void)
 {
 	unsigned int exx[4] = {0, 0, 0, 0};
 
