@@ -438,7 +438,7 @@ ComputeCenters(IvfflatBuildState * buildstate)
 	buildstate->samples = VectorArrayInit(numSamples, buildstate->dimensions, buildstate->centers->itemsize);
 	if (buildstate->heap != NULL)
 	{
-		SampleRows(buildstate);
+		IvfflatBench("sample rows", SampleRows(buildstate));
 
 		if (buildstate->samples->length < buildstate->lists)
 		{
