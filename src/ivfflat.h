@@ -214,7 +214,7 @@ typedef struct IvfflatBuildState
 	BlockSamplerData bs;
 	ReservoirStateData rstate;
 	double		samplerows;
-	int			rowstoskip;
+	double		rowstoskip;
 
 	/* Sorting */
 	Tuplesortstate *sortstate;
