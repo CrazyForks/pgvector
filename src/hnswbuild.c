@@ -54,6 +54,7 @@
 #include "nodes/execnodes.h"
 #include "optimizer/optimizer.h"
 #include "storage/bufmgr.h"
+#include "storage/condition_variable.h"
 #include "tcop/tcopprot.h"
 #include "utils/datum.h"
 #include "utils/memutils.h"
@@ -802,7 +803,11 @@ HnswParallelScanAndInsert(Relation heapRel, Relation indexRel, HnswShared * hnsw
 	buildstate.hnswarea = hnswarea;
 	InitAllocator(&buildstate.allocator, &HnswSharedMemoryAlloc, &buildstate);
 	scan = table_beginscan_parallel(heapRel,
-									ParallelTableScanFromHnswShared(hnswshared));
+									ParallelTableScanFromHnswShared(hnswshared)
+#if PG_VERSION_NUM >= 190000
+									,SO_NONE
+#endif
+		);
 	reltuples = table_index_build_scan(heapRel, indexRel, indexInfo,
 									   true, progress, BuildCallback,
 									   (void *) &buildstate, scan);

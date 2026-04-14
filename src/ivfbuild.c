@@ -22,6 +22,7 @@
 #include "nodes/execnodes.h"
 #include "optimizer/optimizer.h"
 #include "storage/bufmgr.h"
+#include "storage/condition_variable.h"
 #include "tcop/tcopprot.h"
 #include "utils/memutils.h"
 #include "utils/rel.h"
@@ -377,6 +378,9 @@ InitBuildState(IvfflatBuildState * buildstate, Relation heap, Relation index, In
 	TupleDescInitEntry(buildstate->sortdesc, (AttrNumber) 1, "list", INT4OID, -1, 0);
 	TupleDescInitEntry(buildstate->sortdesc, (AttrNumber) 2, "tid", TIDOID, -1, 0);
 	TupleDescInitEntry(buildstate->sortdesc, (AttrNumber) 3, "vector", TupleDescAttr(buildstate->tupdesc, 0)->atttypid, -1, 0);
+#if PG_VERSION_NUM >= 190000
+	TupleDescFinalize(buildstate->sortdesc);
+#endif
 
 	buildstate->slot = MakeSingleTupleTableSlot(buildstate->sortdesc, &TTSOpsVirtual);
 
@@ -653,7 +657,11 @@ IvfflatParallelScanAndSort(IvfflatSpool * ivfspool, IvfflatShared * ivfshared, S
 	ivfspool->sortstate = InitBuildSortState(buildstate.sortdesc, sortmem, coordinate);
 	buildstate.sortstate = ivfspool->sortstate;
 	scan = table_beginscan_parallel(ivfspool->heap,
-									ParallelTableScanFromIvfflatShared(ivfshared));
+									ParallelTableScanFromIvfflatShared(ivfshared)
+#if PG_VERSION_NUM >= 190000
+									,SO_NONE
+#endif
+		);
 	reltuples = table_index_build_scan(ivfspool->heap, ivfspool->index, indexInfo,
 									   true, progress, BuildCallback,
 									   (void *) &buildstate, scan);

@@ -6,6 +6,7 @@
 #include "nodes/execnodes.h"
 #include "storage/bufmgr.h"
 #include "storage/lmgr.h"
+#include "storage/lwlock.h"
 #include "utils/datum.h"
 #include "utils/memutils.h"
 #include "utils/rel.h"

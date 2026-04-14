@@ -298,6 +298,9 @@ ivfflatbeginscan(Relation index, int nkeys, int norderbys)
 	so->tupdesc = CreateTemplateTupleDesc(2);
 	TupleDescInitEntry(so->tupdesc, (AttrNumber) 1, "distance", FLOAT8OID, -1, 0);
 	TupleDescInitEntry(so->tupdesc, (AttrNumber) 2, "heaptid", TIDOID, -1, 0);
+#if PG_VERSION_NUM >= 190000
+	TupleDescFinalize(so->tupdesc);
+#endif
 
 	/* Prep sort */
 	so->sortstate = InitScanSortState(so->tupdesc);

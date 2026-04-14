@@ -10,6 +10,10 @@
 #include "lib/pairingheap.h"
 #include "nodes/execnodes.h"
 #include "port.h"				/* for random() */
+#include "storage/bufpage.h"
+#include "storage/condition_variable.h"
+#include "storage/lwlock.h"
+#include "storage/s_lock.h"
 #include "utils/relptr.h"
 #include "utils/sampling.h"
 #include "vector.h"

@@ -9,6 +9,7 @@
 #include "lib/pairingheap.h"
 #include "nodes/execnodes.h"
 #include "port.h"				/* for random() */
+#include "storage/condition_variable.h"
 #include "utils/sampling.h"
 #include "utils/tuplesort.h"
 #include "vector.h"

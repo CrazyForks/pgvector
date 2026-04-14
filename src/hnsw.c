@@ -13,6 +13,7 @@
 #include "hnsw.h"
 #include "miscadmin.h"
 #include "nodes/pg_list.h"
+#include "storage/lwlock.h"
 #include "utils/float.h"
 #include "utils/guc.h"
 #include "utils/relcache.h"
