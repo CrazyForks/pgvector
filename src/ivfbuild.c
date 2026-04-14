@@ -63,15 +63,13 @@ AddSample(Datum *values, IvfflatBuildState * buildstate)
 	Datum		value = PointerGetDatum(PG_DETOAST_DATUM(values[0]));
 
 	/*
-	 * Normalize with KMEANS_NORM_PROC since spherical distance function
-	 * expects unit vectors
+	 * Check with KMEANS_NORM_PROC that the value can be normalized
+	 * since spherical distance function expects unit vectors
 	 */
 	if (buildstate->kmeansnormprocinfo != NULL)
 	{
 		if (!IvfflatCheckNorm(buildstate->kmeansnormprocinfo, buildstate->collation, value))
 			return;
-
-		value = IvfflatNormValue(buildstate->typeInfo, buildstate->collation, value);
 	}
 
 	if (samples->length < targsamples)
@@ -149,6 +147,22 @@ SampleRows(IvfflatBuildState * buildstate)
 
 		table_index_build_range_scan(buildstate->heap, buildstate->index, buildstate->indexInfo,
 									 false, true, false, targblock, 1, SampleCallback, (void *) buildstate, NULL);
+	}
+
+	/* Normalize if needed */
+	if (buildstate->kmeansnormprocinfo)
+	{
+		VectorArray samples = buildstate->samples;
+		Datum       value;
+		Datum       nvalue;
+
+		for (int i = 0; i < samples->length; i++)
+		{
+			value  = PointerGetDatum(VectorArrayGet(samples, i));
+			nvalue = IvfflatNormValue(buildstate->typeInfo, buildstate->collation, value);
+			VectorArraySet(samples, i, DatumGetPointer(nvalue));
+			pfree(DatumGetPointer(nvalue));
+		}
 	}
 }
 
