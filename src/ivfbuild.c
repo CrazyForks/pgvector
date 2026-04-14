@@ -99,6 +99,7 @@ AddSample(Datum *values, IvfflatBuildState * buildstate)
 		buildstate->rowstoskip -= 1;
 	}
 
+	/* Increment after reservoir_get_next_S */
 	buildstate->samplerows += 1;
 }
 
