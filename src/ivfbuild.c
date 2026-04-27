@@ -145,8 +145,14 @@ SampleRows(IvfflatBuildState * buildstate)
 	{
 		BlockNumber targblock = BlockSampler_Next(&buildstate->bs);
 
+		/*
+		 * anyvisible must be false when the scan uses an MVCC snapshot
+		 * (i.e. CREATE INDEX CONCURRENTLY), otherwise PG will assert in
+		 * heapam_index_build_range_scan. Always pass false here, matching
+		 * what table_index_build_scan does internally.
+		 */
 		table_index_build_range_scan(buildstate->heap, buildstate->index, buildstate->indexInfo,
-									 false, true, false, targblock, 1, SampleCallback, (void *) buildstate, NULL);
+									 false, false, false, targblock, 1, SampleCallback, (void *) buildstate, NULL);
 	}
 
 	/* Normalize if needed */
